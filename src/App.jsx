@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
+
 const VoiceBot = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [listening, setListening] = useState(false);
   const [audioEnabled, setAudioEnabled] = useState(true);
   const recognitionRef = useRef(null);
-  const synth = window.speechSynthesis;
+  const synthRef = useRef(window.speechSynthesis);
+  const currentUtteranceRef = useRef(null);
 
   useEffect(() => {
     if ("webkitSpeechRecognition" in window) {
@@ -18,6 +20,7 @@ const VoiceBot = () => {
       recognition.onstart = () => setListening(true);
       recognition.onend = () => setListening(false);
       recognition.onerror = () => setListening(false);
+
       recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
         setInput(transcript);
@@ -32,13 +35,24 @@ const VoiceBot = () => {
 
   const speak = (text) => {
     if (!audioEnabled) return;
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "en-UK";
-    synth.speak(utterance);
-    utterance.pitch = 1;
-  utterance.rate = 1;
-  utterance.volume = 1;
 
+    // Stop previous utterance if still speaking
+    if (synthRef.current.speaking && currentUtteranceRef.current) {
+      synthRef.current.cancel();
+    }
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.pitch = 1;
+    utterance.rate = 1;
+    utterance.volume = 1;
+
+    // Select preferred voice
+    const voices = synthRef.current.getVoices();
+    const preferred = voices.find((v) => v.name.includes("Google US English")) || voices.find(v => v.lang.startsWith("en"));
+    if (preferred) utterance.voice = preferred;
+
+    currentUtteranceRef.current = utterance;
+    synthRef.current.speak(utterance);
   };
 
   const sendMessage = async (text) => {
@@ -124,7 +138,6 @@ Always keep responses thoughtful, grounded, and realistic — like Shaurya would
 
       const botContent = response.data.choices[0].message.content;
       const botMessage = { role: "bot", content: botContent };
-
       setMessages((prev) => [...prev, botMessage]);
       speak(botContent);
     } catch (err) {
@@ -137,23 +150,32 @@ Always keep responses thoughtful, grounded, and realistic — like Shaurya would
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
+      {/* Blurred Background */}
       <img
         src="/bot.jpg"
-        alt="Bot Background"
-        className="absolute inset-0 w-full h-full object-cover blur opacity-100 z-0"
+        alt="Background"
+        className="absolute inset-0 w-full h-full object-cover blur-lg z-0"
       />
 
       <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
         <div className="bg-base-100 w-full max-w-xl rounded-3xl shadow-xl p-6 space-y-4 border border-gray-200 backdrop-blur-md bg-opacity-90">
-          <div className="flex items-center gap-4">
-            <div className="avatar">
-              <div className="w-12 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-                <img src="/bot.jpg" alt="User Avatar" />
+          
+          {/* Header with Listening Indicator */}
+          <div className="flex items-center gap-4 justify-between">
+            <div className="flex items-center gap-3">
+              <div className="avatar">
+                <div className="w-12 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+                  <img src="/bot.jpg" alt="User Avatar" />
+                </div>
               </div>
+              <h2 className="text-xl font-bold">Shaurya Voicebot</h2>
             </div>
-            <h2 className="text-xl font-bold">Shaurya Voicebot</h2>
+            {listening && (
+              <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse" title="Listening"></div>
+            )}
           </div>
 
+          {/* Chat Area */}
           <div className="h-72 overflow-y-auto space-y-3 bg-base-200 p-4 rounded-xl">
             {messages.map((msg, idx) => (
               <div
@@ -179,10 +201,12 @@ Always keep responses thoughtful, grounded, and realistic — like Shaurya would
             ))}
           </div>
 
+          {/* Input Section */}
           <div className="flex items-center gap-2">
             <button
               onClick={startListening}
               className={`btn btn-circle ${listening ? "btn-info" : "btn-outline"}`}
+              title="Speak"
             >
               🎤
             </button>
@@ -201,6 +225,7 @@ Always keep responses thoughtful, grounded, and realistic — like Shaurya would
             </button>
           </div>
 
+          {/* Audio Toggle */}
           <div className="form-control items-center">
             <label className="label cursor-pointer gap-2">
               <span className="label-text">Audio response</span>
