@@ -1,4 +1,4 @@
-# Modern Voice AI Chatbot
+# Shaurya Voicebot
 
 A clean, iMessage-style AI voice assistant built using modern web tech.
 
@@ -6,9 +6,7 @@ A clean, iMessage-style AI voice assistant built using modern web tech.
 - React + Vite
 - Tailwind CSS + DaisyUI
 - Web Speech API (voice input/output)
-- Framer Motion (typing/recording animation)
-- Responsive Design (mobile & desktop)
-
+  
 ## 📦 Getting Started
 
 ```bash
