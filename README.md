@@ -20,4 +20,4 @@ npm run dev
 - 🌐 Works on all devices
 
 ## ⚠ Limitations
-- Although I tried using something that would work universally, it appears that this works best on Google Chrome specifically, not even Chromiumm-based browsers.
+- Although I tried using something that would work universally, it appears that this works best on Google Chrome specifically, not even Chromium-based browsers.
