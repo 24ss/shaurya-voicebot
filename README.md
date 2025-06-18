@@ -1,6 +1,8 @@
 # Shaurya Voicebot
 
 A clean, iMessage-style AI voice assistant built using modern web tech.
+![giffity](https://github.com/user-attachments/assets/afdb8bfc-846d-4155-abe3-6258d2937a97)
+
 
 ## 🚀 Tech Stack
 - React + Vite
