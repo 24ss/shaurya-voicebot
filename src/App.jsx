@@ -31,7 +31,12 @@ const VoiceBot = () => {
     }
   }, []);
 
-  const startListening = () => recognitionRef.current?.start();
+ const startListening = () => {
+  if (synthRef.current.speaking && currentUtteranceRef.current) {
+    synthRef.current.cancel();
+  }
+  recognitionRef.current?.start();
+};
 
   const speak = (text) => {
     if (!audioEnabled) return;
