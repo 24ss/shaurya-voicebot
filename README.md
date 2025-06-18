@@ -1,6 +1,6 @@
 # Shaurya Voicebot
 
-A clean, iMessage-style AI voice assistant built using modern web tech. It tells you about me and my personal life, go and ask itself some questions!
+A clean, iMessage-style AI voice assistant built using modern web tech. It tells you about me and my personal life, go and ask it some questions!
 ![giffity](https://github.com/user-attachments/assets/afdb8bfc-846d-4155-abe3-6258d2937a97)
 
 
